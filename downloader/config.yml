@@ -1,0 +1,10 @@
+base_url: "https://datasets.imdbws.com"
+datasets:
+  - name.basics
+  - title.akas
+  - title.basics
+  - title.crew
+  - title.episode
+  - title.principals
+  - title.ratings
+dest_dir: "./data"
