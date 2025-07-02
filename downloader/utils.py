@@ -56,15 +56,14 @@ def download_and_decompress(name: str, dest_dir: Path, base_url: str) -> Path:
 	decompressed_path = dest_dir / f"{name}.tsv"
 	etag_path = compressed_path.with_suffix(compressed_path.suffix + ".etag")
 
-	print(f"compressed_path: {compressed_path}, decompressed_path: {decompressed_path}, etag_path: {etag_path}")
-	if compressed_path.exists() and etag_path.exists():
+	if decompressed_path.exists() and etag_path.exists():
 		print(f"→ Comprobando si {name}.tsv.gz ha cambiado …")
 		if comparar_etag_local_vs_remoto(url, etag_path):
 			print(f"→ {name}.tsv.gz ya está actualizado, no se descarga.")
 			return decompressed_path if decompressed_path.exists() else decompressed_path
 		else:
 			print(f"→ {name}.tsv.gz ha cambiado, se descarga de nuevo.")
-
+	
 	print(f"→ Descargando {url} …")
 	with requests.get(url, stream=True) as r:
 		r.raise_for_status()
