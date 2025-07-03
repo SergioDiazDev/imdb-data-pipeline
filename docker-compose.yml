@@ -14,23 +14,23 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
 
-  loader:
-    build:
-      context: ./loader
-      dockerfile: Dockerfile
-    container_name: imdb_loader
-    depends_on:
-      - postgres
-    environment:
-      DATA_DIR: /imdb-data-pipeline/data
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-    restart: "no"
-    volumes:
-      - ./data:/imdb-data-pipeline/data
+  # loader:
+  #   build:
+  #     context: ./loader
+  #     dockerfile: Dockerfile
+  #   container_name: imdb_loader
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     DATA_DIR: /imdb-data-pipeline/data
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_HOST: ${POSTGRES_HOST}
+  #     POSTGRES_PORT: ${POSTGRES_PORT}
+  #   restart: "no"
+  #   volumes:
+  #     - ./data:/imdb-data-pipeline/data
 
   postgres:
     image: postgres:16
@@ -47,6 +47,22 @@ services:
       - data:/imdb-data-pipeline/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: imdb_api
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
 
 volumes:
   pgdata:
