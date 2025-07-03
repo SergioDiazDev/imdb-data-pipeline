@@ -1,8 +1,29 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from models import Base  # importa tus modelos aquí
 
-DATABASE_URL = "postgresql+psycopg2://admin:admin123@localhost:5432/mydb"
+DATABASE_URL = (
+	f"postgresql+psycopg2://"
+	f"{os.getenv('POSTGRES_USER')}:"
+	f"{os.getenv('POSTGRES_PASSWORD')}@"
+	f"{os.getenv('POSTGRES_HOST')}:"
+	f"{os.getenv('POSTGRES_PORT')}/"
+	f"{os.getenv('POSTGRES_DB')}"
+)
+DATA_DIR = os.getenv('DATA_DIR')
+
+def disable_fks_and_triggers(engine, table_names):
+	with engine.connect() as conn:
+		for table in table_names:
+			conn.execute(text(f'ALTER TABLE "{table}" DISABLE TRIGGER ALL;'))
+		conn.commit()
+
+def enable_fks_and_triggers(engine, table_names):
+	with engine.connect() as conn:
+		for table in table_names:
+			conn.execute(text(f'ALTER TABLE "{table}" ENABLE TRIGGER ALL;'))
+		conn.commit()
+
 
 def quote_col(col: str) -> str:
 	# Si la columna tiene mayúsculas, ponla entre comillas dobles
@@ -117,21 +138,37 @@ def load_title_ratings(engine, path):
 def main():
 	engine = create_engine(DATABASE_URL, echo=True)
 
-	# Crea las tablas según modelos
+	# Crea las tablas según modelos y las trunca si existen
+	Base.metadata.drop_all(engine)  # Elimina tablas existentes
 	Base.metadata.create_all(engine)
 
 	# Cargar primero tablas sin FK
-	load_title_basics(engine, "../data/title.basics.tsv")
-	load_name_basics(engine, "../data/name.basics.tsv")
+	load_title_basics(engine, f"{DATA_DIR}/title.basics.tsv")
+	load_name_basics(engine, f"{DATA_DIR}/name.basics.tsv")
+
+	dependent_tables = [
+		"title_akas",
+		"title_crew",
+		"title_episode",
+		"title_principals",
+		"title_ratings"
+	]
+	disable_fks_and_triggers(engine, dependent_tables)
 
 	# Luego tablas dependientes
-	load_title_akas(engine, "../data/title.akas.tsv")
-	load_title_crew(engine, "../data/title.crew.tsv")
-	load_title_episode(engine, "../data/title.episode.tsv")
-	load_title_principals(engine, "../data/title.principals.tsv")
-	load_title_ratings(engine, "../data/title.ratings.tsv")
+	load_title_akas(engine, f"{DATA_DIR}/title.akas.tsv")
+	load_title_crew(engine, f"{DATA_DIR}/title.crew.tsv")
+	load_title_episode(engine, f"{DATA_DIR}/title.episode.tsv")
+	load_title_principals(engine, f"{DATA_DIR}/title.principals.tsv")
+	load_title_ratings(engine, f"{DATA_DIR}/title.ratings.tsv")
 
 	print("✅ Todos los archivos cargados con COPY.")
+
+	enable_fks_and_triggers(engine, dependent_tables)
+
+	with engine.connect() as conn:
+		conn.execute(text("CHECKPOINT;"))
+		conn.commit()
 
 if __name__ == "__main__":
 	main()
