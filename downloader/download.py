@@ -23,5 +23,9 @@ def main():
 		except Exception as e:
 			print(f"\n‼ Error descargando {dataset}: {e}", file=sys.stderr)
 
+	# Creo un archivo download.done para indicar que la descarga ha finalizado
+	done_file = dest_dir / "downloader.done"
+	done_file.touch()
+
 if __name__ == "__main__":
 	main()
