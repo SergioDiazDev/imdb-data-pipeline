@@ -5,7 +5,6 @@ import gzip
 import shutil
 from pathlib import Path
 import yaml
-import hashlib
 
 def load_config(config_path: Path = Path("config.yml")) -> dict:
 	"""
