@@ -5,6 +5,7 @@ POSTGRES_PORT = 5432
 
 LOADER_SERVICE = loader
 API_SERVICE = api
+DOWNLOADER_SERVICE = downloader
 
 .PHONY: build up down restart logs ps
 
@@ -31,13 +32,16 @@ dev-all: build
 	docker-compose --profile all up
 
 open-db:
-	docker-compose exec -it $(DB_SERVICE) psql -U $(POSTGRES_USER) $(POSTGRES_DB)
+	docker exec -it $(DB_SERVICE) psql -U $(POSTGRES_USER) $(POSTGRES_DB)
 
 open-loader:
-	docker-compose exec -it $(LOADER_SERVICE) bash
+	docker exec -it $(LOADER_SERVICE) bash
 
 open-api:
-	docker-compose exec -it $(API_SERVICE) bash
+	docker exec -it $(API_SERVICE) bash
+
+open-downloader:
+	docker exec -it $(DOWNLOADER_SERVICE) bash
 
 logs:
 	docker-compose --profile all logs -f
