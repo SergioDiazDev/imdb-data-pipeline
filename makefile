@@ -1,20 +1,19 @@
-DB_SERVICE = postgres_db
-POSTGRES_USER = admin
-POSTGRES_DB = mydb
-POSTGRES_PORT = 5432
+# Carga y exporta variables desde .env
+include .env
+export $(shell sed 's/=.*//' .env)
 
+# Define los servicios de Docker Compose
+DB_SERVICE = postgres_db
 LOADER_SERVICE = loader
 API_SERVICE = api
 DOWNLOADER_SERVICE = downloader
-
-.PHONY: build up down restart logs ps
 
 all: up
 
 build:
 	docker-compose --profile all build
 
-# Create and start all services, but do not start the ones in the "manual" profile
+# Crea todos los contenedores de Docker y inica los de API y Postgres
 up:
 	docker-compose --profile all up -d --no-start
 	docker-compose --profile manual up -d
@@ -48,3 +47,5 @@ logs:
 
 ps:
 	docker-compose --profile all ps
+
+.PHONY: all build up down restart dev dev-all open-db open-loader open-api open-downloader logs ps
