@@ -20,4 +20,4 @@ done
 
 echo "PostgreSQL está listo, comenzando la carga..."
 
-exec python load_db.py
+exec python main.py
