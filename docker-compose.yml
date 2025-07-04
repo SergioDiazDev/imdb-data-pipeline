@@ -4,42 +4,41 @@ services:
       context: ./downloader
       dockerfile: Dockerfile
     container_name: imdb_downloader
-    volumes:
-      - ./data:/imdb-data-pipeline/data
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
+    volumes:
+      - ./data:/imdb-data-pipeline/data
+    restart: "no"
     profiles:
       - all
-    restart: "no"
+    env_file: .env
 
   loader:
     build:
       context: ./loader
       dockerfile: Dockerfile
     container_name: imdb_loader
-    depends_on:
-      - postgres
     environment:
-      DATA_DIR: /imdb-data-pipeline/data
+      DATA_DIR: ${DATA_DIR}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
-    profiles:
-      - all
-    restart: "no"
     volumes:
       - ./data:/imdb-data-pipeline/data
+    restart: "no"
+    profiles:
+      - all
+    env_file: .env
 
   postgres:
     image: postgres:16
     container_name: postgres_db
-    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -48,12 +47,13 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - data:/imdb-data-pipeline/data
       - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    restart: unless-stopped
     profiles:
       - all
       - manual
+    env_file: .env
 
   api:
     build:
@@ -76,6 +76,7 @@ services:
     profiles:
       - all
       - manual
+    env_file: .env
 
 volumes:
   pgdata:
