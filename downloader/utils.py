@@ -15,35 +15,6 @@ def load_config(config_path: Path = Path("config.yml")) -> dict:
 		return yaml.safe_load(f)
 
 
-def download(name: str, dest_dir: Path, base_url: str) -> Path:
-	"""
-	Descarga un archivo IMDb .tsv.gz y lo guarda en el directorio destino solo si cambia.
-	"""
-	url = f"{base_url}/{name}.tsv.gz"
-	compressed_path = dest_dir / f"{name}.tsv.gz"
-	decompressed_path = dest_dir / f"{name}.tsv"
-	hash_path = dest_dir / f"{name}.tsv.gz.sha256"
-
-	# Comprobar si el hash remoto y local coinciden
-	if compressed_path.exists() and hash_path.exists():
-		if comparar_hash_remoto_vs_local(url, hash_path):
-			print(f"→ {name}.tsv.gz ya está actualizado, no se descarga.")
-			return decompressed_path if decompressed_path.exists() else decompressed_path
-
-	# Descargar el archivo
-	print(f"→ Descargando {url} …")
-	with requests.get(url, stream=True) as r:
-		r.raise_for_status()
-		with open(compressed_path, "wb") as f:
-			for chunk in r.iter_content(chunk_size=8192):
-				f.write(chunk)
-	print(" OK")
-
-	# Guardar hash
-	save_file_hash(compressed_path, hash_path)
-
-	return decompressed_path
-
 def download_and_decompress(name: str, dest_dir: Path, base_url: str) -> Path:
 	"""
 	Descarga un archivo IMDb .tsv.gz, lo descomprime y guarda el archivo descomprimido en el directorio destino.
