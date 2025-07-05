@@ -123,6 +123,7 @@ Y esto va a iniciar los contenedores `api` y `postgres`.
 
 - [ ] **Seguridad y control de acceso a la API**: actualmente no hay autenticación, autorización ni límite de uso. Debería añadirse un sistema de autenticación con roles y validación básica para evitar llamadas arbitrarias.
 
+- [ ] **Tests**: Añadir tests unitarios y de integración
 
 
 
