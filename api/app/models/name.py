@@ -12,6 +12,3 @@ class NameBasic(Base):
 	deathYear: Mapped[Optional[int]]
 	primaryProfession: Mapped[Optional[str]]
 	knownForTitles: Mapped[Optional[str]]
-
-	# Relación corregida (eliminada redundancia)
-	principals: Mapped[List["TitlePrincipal"]] = relationship("TitlePrincipal", back_populates="person")
