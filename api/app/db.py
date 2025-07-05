@@ -3,6 +3,11 @@ from app.models.base import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import logging
+
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 DATABASE_URL = (
 	f"postgresql+psycopg2://"
 	f"{os.getenv('POSTGRES_USER')}:"
@@ -12,6 +17,7 @@ DATABASE_URL = (
 	f"{os.getenv('POSTGRES_DB')}"
 )
 
+# engine = create_engine(DATABASE_URL, echo=True)
 engine = create_engine(DATABASE_URL)
 # Create the database tables if they do not exist
 Base.metadata.create_all(bind=engine)
