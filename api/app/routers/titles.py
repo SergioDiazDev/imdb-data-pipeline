@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, nullslast
 from typing import List, Optional
 
 from app.models.title import TitleBasic
@@ -10,7 +10,7 @@ from app.db import get_db
 router = APIRouter(prefix="/titles", tags=["Titles"])
 
 @router.get("/search", response_model=List[TitleOut])
-def search_titles(
+def search_titles_by_original_title(
 	originalTitle: str = Query(..., min_length=1),
 	skip: int = 0,
 	limit: int = 100,
@@ -20,6 +20,7 @@ def search_titles(
 	results = (
 		db.query(TitleBasic)
 		.filter(func.lower(TitleBasic.originalTitle).like(pattern))
+		.order_by(TitleBasic.originalTitle, TitleBasic.tconst)  # Orden total y estable
 		.offset(skip)
 		.limit(limit)
 		.all()

@@ -20,6 +20,7 @@ def search_people(
 	results = (
 		db.query(NameBasic)
 		.filter(func.lower(NameBasic.primaryName).like(pattern))
+		.order_by(NameBasic.primaryName, NameBasic.nconst)  # Order by primaryName
 		.offset(skip)
 		.limit(limit)
 		.all()
