@@ -24,6 +24,8 @@ Este proyecto permite cargar y exponer vía API REST los datos públicos de IMDb
    - `POST /run-downloader` → descarga y descomprime los TSV
    - `POST /run-loader` → carga los datos si `downloader` ya terminó
 
+> Recuerda que puedes usar la documentacion de FastAPI para realizar las llamadas -> http://localhost:8000/docs
+
 > La carga completa puede tardar varios minutos, dependiendo del equipo. El dataset pesa ~11 GB comprimido.
 
 ---
