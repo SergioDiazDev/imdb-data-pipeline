@@ -7,6 +7,7 @@ from load_db import (
 	load_title_crew, load_title_episode, load_title_principals,
 	load_title_ratings
 )
+from models import TitleBasic, NameBasic, TitleAkas, TitleCrew, TitleEpisode, TitlePrincipal, TitleRating
 
 def main():
 
@@ -24,6 +25,16 @@ def main():
 	Base.metadata.drop_all(engine)
 	Base.metadata.create_all(engine)
 
+	# Creo las tablas con sus relaciones
+	TitleBasic.metadata.create_all(engine)
+	NameBasic.metadata.create_all(engine)
+	TitleAkas.metadata.create_all(engine)
+	TitleCrew.metadata.create_all(engine)
+	TitleEpisode.metadata.create_all(engine)
+	TitlePrincipal.metadata.create_all(engine)
+	TitleRating.metadata.create_all(engine)
+
+	
 	load_title_basics(engine, f"{os.getenv('DATA_DIR')}/title.basics.tsv")
 	load_name_basics(engine, f"{os.getenv('DATA_DIR')}/name.basics.tsv")
 

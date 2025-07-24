@@ -47,9 +47,6 @@ def run_loader():
 				volumes={
 					"/ruta/host/data": {"bind": "/imdb-data-pipeline/data", "mode": "rw"},
 				},
-				environment={
-					"DATABASE_URL": "postgresql+psycopg2://admin:admin123@postgres_db:5432/mydb"
-				},
 			)
 			return {"status": "loader created and started"}
 		except docker.errors.APIError as e:
